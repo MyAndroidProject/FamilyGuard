@@ -1,6 +1,6 @@
 package com.nikhil.childlocator.servicecomponent;
 
-package com.A_and_N.familyguard.servicecomponent;
+
 
 import java.io.IOException;
 import java.io.InputStream;
