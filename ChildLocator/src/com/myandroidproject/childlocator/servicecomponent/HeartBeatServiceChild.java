@@ -1,4 +1,4 @@
-package com.nikhil.childlocator.servicecomponent;
+package com.myandroidproject.childlocator.servicecomponent;
 
 
 

@@ -1,4 +1,4 @@
-package com.nikhil.childlocator.action;
+package com.myandroidproject.childlocator.action;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import android.util.Log;
 
 
 
-import com.nikhil.childlocator.activity.PostLoginActivity;
-import com.nikhil.childlocator.properties.Constants;
+import com.myandroidproject.childlocator.activity.PostLoginActivity;
+import com.myandroidproject.childlocator.properties.Constants;
 
 
 public class LoginAction {

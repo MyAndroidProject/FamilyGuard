@@ -1,4 +1,6 @@
-package com.nikhil.childlocator.activity;
+package com.myandroidproject.childlocator.activity;
+
+import com.nikhil.childlocator.activity.R;
 
 import android.app.Activity;
 import android.os.Bundle;

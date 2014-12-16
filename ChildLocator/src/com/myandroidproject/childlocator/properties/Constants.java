@@ -1,4 +1,4 @@
-package com.nikhil.childlocator.properties;
+package com.myandroidproject.childlocator.properties;
 
 public class Constants {
 	public static final String REGISTER_URL = "http://10.0.2.2/ChildTracker_php/webService/RegisterService.php";
