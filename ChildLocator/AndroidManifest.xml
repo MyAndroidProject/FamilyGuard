@@ -32,6 +32,7 @@
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
+        <service android:name="com.nikhil.childlocator.servicecomponent.HeartBeatServiceChild"></service>
     </application>
 
 </manifest>
