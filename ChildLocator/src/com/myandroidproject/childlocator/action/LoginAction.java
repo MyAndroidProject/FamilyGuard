@@ -84,11 +84,12 @@ public class LoginAction {
 		
 		pref = getContext().getSharedPreferences("localdiskchildlocator", 0);
 		editor = pref.edit();
-
+Log.e("writeToSharedPreferences", "localdiskchildlocator");
 		editor.putString("userName", getUsername());
 		editor.putString("password", getPassword());
 		editor.putInt("logintype", getRole());
 		editor.putInt("loginstatus", 99);
+		
 		editor.commit();
 
 	}
@@ -120,26 +121,39 @@ public class LoginAction {
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-
+			 int loginStatus = 0;
 			JSONObject json_data;
 			try {
 				json_data = new JSONObject(result);
 				for (int i = 0; i < json_data.length(); i++) {
 
 					if (Integer.parseInt(json_data.getString("status")) == 200) {
+						 loginStatus = 200;
 						setUsername(json_data.getString("username"));
 						setPassword(json_data.getString("password"));
 						setRole(Integer.parseInt(json_data.getString("role")));
 					}
+					else
+						loginStatus = Integer.parseInt(json_data.getString("status"));
 				}
 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			Log.e("parsing", getUsername() + getPassword() + getRole());
-			postLogin();
+			 if (loginStatus == 200) {
+				    Log.e("parsing", getUsername() + getPassword() + getRole());
+				    postLogin();
+				   }else{
+					   if (loginStatus == 500) 
+						   Log.e("RegisterError",Constants.Username_Password_Null);
+					   else if (loginStatus == 501)
+						   Log.e("RegisterError", Constants.Username_Exists);
+					else if (loginStatus == 502)
+							   Log.e("RegisterError", Constants.DBError);
+					   
+				 
+				   }
 		}
 
 		@Override
@@ -156,12 +170,16 @@ public class LoginAction {
 				HttpPost httpPost = null;
 
 				DefaultHttpClient httpClient = new DefaultHttpClient();
-				if (params.equals("login"))
+				if (params[0].toString().equalsIgnoreCase("login"))
+				{
 					httpPost = new HttpPost(Constants.LOGIN_URL);
+				Log.e("Service url",params[0].toString()+" "+ Constants.LOGIN_URL);
+				}
 				else {
 					params1.add(new BasicNameValuePair("role", String
 							.valueOf(getRole())));
 					httpPost = new HttpPost(Constants.REGISTER_URL);
+					Log.e("Service url",params[0].toString()+" "+ Constants.REGISTER_URL);
 				}
 				httpPost.setEntity(new UrlEncodedFormEntity(params1));
 

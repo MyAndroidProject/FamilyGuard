@@ -1,6 +1,7 @@
 package com.myandroidproject.childlocator.activity;
 
 import com.myandroidproject.childlocator.action.LoginAction;
+import com.myandroidproject.childlocator.properties.Constants;
 
 
 import android.app.Activity;
@@ -72,7 +73,7 @@ public class RegisterActivity extends Activity {
 				} else {
 					Toast.makeText(
 							getApplicationContext(),
-							"UserName and Password must contain minimum 6 letters",
+							Constants.Username_Password_length,
 							Toast.LENGTH_SHORT).show();
 				}
 			}

@@ -10,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -55,7 +56,7 @@ public class MainActivity extends Activity {
 				action.setUsername(user);
 				pass = password.getText().toString();
 				action.setPassword(pass);
-				// str =action.doLogin();
+				
 
 				action.doLogin();
 				checkLoginStatus();
@@ -71,6 +72,7 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		Log.e("onresume", "onresume");
 		checkLoginStatus();
 	}
 
@@ -85,7 +87,8 @@ public class MainActivity extends Activity {
 		pref = getApplicationContext().getSharedPreferences(
 				"localdiskchildlocator", 0);
 		int statusTemp = pref.getInt("loginstatus", 0);
-
+		
+		Log.e("checkLoginStatus",String.valueOf(statusTemp)+pref.getString("userName", "")+pref.getString("password", ""));
 		if (statusTemp == 99) {
 
 			Intent intent = new Intent(getApplicationContext(),
