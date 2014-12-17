@@ -58,9 +58,10 @@ require_once 'db.php';
 			}
 			function maxid()
 			{
-				$sql = $sql = "SELECT max(id) FROM `login` ";
+				$sql = $sql = 'SELECT MAX( id )  "id" FROM  `login`';
 				$result = mysql_query($sql) or die(mysql_error());
-				return mysql_result($result, 0);
+				$row=mysql_fetch_assoc($result) or die(mysql_error());
+				return $row['id'];
 			}
 			function update()
 			{
@@ -75,12 +76,14 @@ require_once 'db.php';
 			function update_password($pass)
 			{
 				//$pass = md5($pass);
-				$sql= "update login set password ='$pass' where id = $this->id ";
+				$sql= "update `login` set password ='$pass' where id = $this->id ";
 				$result = mysql_query($sql) or die(mysql_error());
 			}
 			function save()
 			{
-				$sql = "INSERT INTO `login`.`users`(`id`, `username`, `password`,`role`) VALUES ($this->id,'$this->username','$this->password')";
+				$this->id = $this->maxid();
+				$this->id++;
+				$sql = "INSERT INTO `login`(`id`, `username`, `password`,`role`) VALUES ($this->id,'$this->username','$this->password',$this->role)";
 				$result = mysql_query($sql) or die(mysql_error());
 						
 			}
