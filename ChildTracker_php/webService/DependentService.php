@@ -15,9 +15,16 @@
 				$dependent->select();
 				if($dependent->child_id == null || $dependent->parent_id == null)
 				{
+				$user->username = $_POST['childName'];
+					$user->username = $_POST['parentName'];
+					$user-> select();
+					$dependent->parent_id = $user->id;	
+					$user->username = $_POST['childName'];
 					$user-> select();
 					$dependent->child_id = $user->id;
-					$dependent->parent_id = $user->id;			
+					
+					;
+							
 					if($dependent->child_id == null || $dependent->parent_id == null)
 						echo Response::deliver_response_dependent(501,"Invalid child Name",$_POST['childName'],$_POST['parentName']);	
 					else
