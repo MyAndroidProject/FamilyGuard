@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">ChildLocator</string>
     <string name="hello_world">Hello world!</string>
@@ -13,5 +13,8 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="parent">Parent</string>
     <string name="child">Child</string>
+    <string name="add">AddDependent</string>
+    <string name="remove">RemoveDependent</string>
 
+    
 </resources>
