@@ -20,23 +20,25 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.util.Log;
 
 
-
-import com.myandroidproject.childlocator.activity.PostLoginActivity;
 import com.myandroidproject.childlocator.properties.Constants;
-
+import com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceChild;
+import com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceParent;
 
 public class LoginAction {
-	
-	 private static InputStream is = null;
-	private String username,password;
+
+	private static InputStream is = null;
+	private String username, password;
 	private int role;
 	private Context context;
-	
-	
+
+	private SharedPreferences pref;
+	private Editor editor;
 
 	public Context getContext() {
 		return context;
@@ -61,32 +63,49 @@ public class LoginAction {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	public void doRegister()
-	{
+
+	public void doRegister() {
 		new Loginwebservice().execute("register");
+		//postLogin();
 	}
-	
-	
-	public void doLogin()
-	{
-	//	if(this.username.equalsIgnoreCase("nikhil") && this.password.equalsIgnoreCase("tutu"))
-		
+
+	public void doLogin() {
+		// if(this.username.equalsIgnoreCase("nikhil") &&
+		// this.password.equalsIgnoreCase("tutu"))
+
 		new Loginwebservice().execute("login");
 
-		
-			//return json;
-		
-		//return Constants.LOGIN_ERROR;
+		// return json;
+
+		// return Constants.LOGIN_ERROR;
 	}
 	
-	public void postLogin()
-	{
-Intent intent = new Intent(getContext(), PostLoginActivity.class);
+	private void writeToSharedPreferences(){
 		
-		getContext().startActivity(intent);
+		pref = getContext().getSharedPreferences("localdiskchildlocator", 0);
+		editor = pref.edit();
+
+		editor.putString("userName", getUsername());
+		editor.putString("password", getPassword());
+		editor.putInt("logintype", getRole());
+		editor.putInt("loginstatus", 99);
+		editor.commit();
+
 	}
-	
+
+	public void postLogin() {
+
+		writeToSharedPreferences();
+		if (getRole() == 0) {
+			getContext().startService(new Intent(getContext(), HeartBeatServiceParent.class));
+		}else if(getRole() == 1){
+			getContext().startService(new Intent(getContext(), HeartBeatServiceChild.class));
+		}
+		
+
+		
+	}
+
 	public int getRole() {
 		return role;
 	}
@@ -95,94 +114,86 @@ Intent intent = new Intent(getContext(), PostLoginActivity.class);
 		this.role = role;
 	}
 
-	private class Loginwebservice extends AsyncTask<String, Integer, String>{
+	private class Loginwebservice extends AsyncTask<String, Integer, String> {
 
-	
 		@Override
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			
+
 			JSONObject json_data;
 			try {
 				json_data = new JSONObject(result);
-			    for(int i=0;i<json_data.length();i++)
-			    {
-			    	 
-			    	   
-			    	if( Integer.parseInt(json_data.getString("status")) == 200)
-			    	{
-			setUsername(json_data.getString("username"));
-			setPassword(json_data.getString("password"));
-				   setRole(Integer.parseInt(json_data.getString("role")));
-			    	}
-			    }
-				
-				
+				for (int i = 0; i < json_data.length(); i++) {
+
+					if (Integer.parseInt(json_data.getString("status")) == 200) {
+						setUsername(json_data.getString("username"));
+						setPassword(json_data.getString("password"));
+						setRole(Integer.parseInt(json_data.getString("role")));
+					}
+				}
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		Log.e("parsing", getUsername()+getPassword()+getRole());
-		postLogin();
+
+			Log.e("parsing", getUsername() + getPassword() + getRole());
+			postLogin();
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
 			// TODO Auto-generated method stub
-			String json ="";
+			String json = "";
 			List<BasicNameValuePair> params1 = new ArrayList<BasicNameValuePair>();
-		      //  params.add(new BasicNameValuePair("tag", login_tag));
-		        params1.add(new BasicNameValuePair("username", getUsername()));
-		        params1.add(new BasicNameValuePair("password", getPassword()));
-			
-			
-			 try {
-		            // defaultHttpClient
-				 HttpPost httpPost=null;
-				 
-		            DefaultHttpClient httpClient = new DefaultHttpClient();
-		            if(params.equals("login"))	
-		            httpPost = new HttpPost(Constants.LOGIN_URL);
-		            else
-		            {
-		            params1.add(new BasicNameValuePair("role",String.valueOf(getRole())));
-		            httpPost = new HttpPost(Constants.REGISTER_URL);
-		            }
-		            httpPost.setEntity(new UrlEncodedFormEntity(params1));
-		 
-		            HttpResponse httpResponse = httpClient.execute(httpPost);
-		            HttpEntity httpEntity = httpResponse.getEntity();
-		            is = httpEntity.getContent();
-		 
-		        } catch (UnsupportedEncodingException e) {
-		            e.printStackTrace();
-		        } catch (ClientProtocolException e) {
-		            e.printStackTrace();
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
-		 
-		        try {
-		            BufferedReader reader = new BufferedReader(new InputStreamReader(
-		                    is, "iso-8859-1"), 8);
-		            StringBuilder sb = new StringBuilder();
-		            String line = null;
-		            while ((line = reader.readLine()) != null) {
-		                sb.append(line);
-		            }
-		            is.close();
-		            json = sb.toString();
-		            Log.e("JSON", json);
-		        } catch (Exception e) {
-		            Log.e("Buffer Error", "Error converting result " + e.toString());
-		        }
-			
+			// params.add(new BasicNameValuePair("tag", login_tag));
+			params1.add(new BasicNameValuePair("username", getUsername()));
+			params1.add(new BasicNameValuePair("password", getPassword()));
+
+			try {
+				// defaultHttpClient
+				HttpPost httpPost = null;
+
+				DefaultHttpClient httpClient = new DefaultHttpClient();
+				if (params.equals("login"))
+					httpPost = new HttpPost(Constants.LOGIN_URL);
+				else {
+					params1.add(new BasicNameValuePair("role", String
+							.valueOf(getRole())));
+					httpPost = new HttpPost(Constants.REGISTER_URL);
+				}
+				httpPost.setEntity(new UrlEncodedFormEntity(params1));
+
+				HttpResponse httpResponse = httpClient.execute(httpPost);
+				HttpEntity httpEntity = httpResponse.getEntity();
+				is = httpEntity.getContent();
+
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			try {
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(is, "iso-8859-1"), 8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line);
+				}
+				is.close();
+				json = sb.toString();
+				Log.e("JSON", json);
+			} catch (Exception e) {
+				Log.e("Buffer Error", "Error converting result " + e.toString());
+			}
+
 			return json;
 		}
 	}
-
-	
 
 }

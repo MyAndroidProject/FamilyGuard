@@ -9,13 +9,31 @@
     tools:context="com.myandroidproject.childlocator.activity.PostLoginActivity" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/textViewUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/textViewRole"
+        android:layout_below="@+id/textViewRole"
+        android:layout_marginTop="40dp"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/buttonLogOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewUserName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="52dp"
+        android:text="LogOut" />
+
+    <TextView
+        android:id="@+id/textViewRole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="65dp"
-        android:layout_marginTop="54dp"
-        android:text="@string/welcome" />
+        android:layout_marginTop="75dp"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

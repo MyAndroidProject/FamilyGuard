@@ -10,10 +10,9 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="23dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
         android:ems="10"
         android:hint="@string/user" >
 
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/username"
         android:layout_below="@+id/username"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="25dp"
         android:ems="10"
         android:hint="@string/pass"
         android:inputType="textPassword" />
@@ -37,26 +36,16 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/password"
         android:layout_below="@+id/password"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="41dp"
         android:text="@string/login" />
 
     <Button
         android:id="@+id/register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/login"
         android:layout_alignBottom="@+id/login"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="62dp"
+        android:layout_alignRight="@+id/username"
         android:text="@string/register" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/register"
-        android:layout_marginTop="52dp"
-        android:layout_toLeftOf="@+id/register"
-        android:text="TextView" />
-
 </RelativeLayout>
-

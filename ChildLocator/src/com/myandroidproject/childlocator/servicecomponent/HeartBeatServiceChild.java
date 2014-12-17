@@ -1,9 +1,10 @@
 package com.myandroidproject.childlocator.servicecomponent;
 
-
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,6 +39,7 @@ public class HeartBeatServiceChild extends Service {
 	private ServiceHandler mServiceHandler;
 	private LocationManager mlocManager = null;
 	private LocationListener mlocListener;
+	private Timer timer;
 
 	private final class ServiceHandler extends Handler {
 
@@ -51,8 +53,19 @@ public class HeartBeatServiceChild extends Service {
 			mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 			mlocListener = new MyLocationListener();
-			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-					5*60*100, 200, mlocListener);
+			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
+					200, mlocListener);
+
+			timer = new Timer();
+			timer.scheduleAtFixedRate(new TimerTask() {
+
+				public void run() {
+					Location loc = getLastKnownLocation();
+					if (loc != null) {
+						updateDetails(loc);
+					}
+				}
+			}, 0, 1 * 60 * 1000);
 
 		}
 	}
@@ -82,14 +95,15 @@ public class HeartBeatServiceChild extends Service {
 		if (mlocManager != null) {
 			mlocManager.removeUpdates(mlocListener);
 		}
-
+		if (timer != null) {
+			timer.cancel();
+		}
 		SERVICE_COUNT = 0;
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
-
 
 		if (1 == SERVICE_COUNT) {
 
@@ -108,29 +122,9 @@ public class HeartBeatServiceChild extends Service {
 		@Override
 		public void onLocationChanged(Location loc) {
 
-			double currentLatitude = loc.getLatitude();
-			double currentLongitude = loc.getLongitude();
-			JSONObject ret = getLocationInfo(currentLatitude,currentLongitude); 
-			JSONObject location;
-			String currentLocation = null;
-			try {
-			    location = ret.getJSONArray("results").getJSONObject(0);
-			    currentLocation = location.getString("formatted_address");
-			} catch (JSONException e1) {
-
-			} catch (Exception e) {
-				
+			if (loc != null) {
+				updateDetails(loc);
 			}
-			
-			float currentBatterylevel = getBatteryLevel();
-			float currentDeviceSpeed = loc.getSpeed();
-			
-			/*
-			 * CALL WEBSERVICE 
-			 * mywebservice(currentLocation, currentDeviceSpeed, currentBatterylevel);
-			 * 
-			 */
-
 		}
 
 		@Override
@@ -148,48 +142,93 @@ public class HeartBeatServiceChild extends Service {
 
 		}
 	}
-	
-	public float getBatteryLevel() {
-	    Intent batteryIntent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-	    int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-	    int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-	    if(level == -1 || scale == -1) {
-	        return 50.0f;
-	    }
+	public void updateDetails(Location loc) {
 
-	    return ((float)level / (float)scale) * 100.0f; 
+		double currentLatitude = loc.getLatitude();
+		double currentLongitude = loc.getLongitude();
+		JSONObject ret = getLocationInfo(currentLatitude, currentLongitude);
+		JSONObject location;
+		String currentLocation = null;
+		try {
+			location = ret.getJSONArray("results").getJSONObject(0);
+			currentLocation = location.getString("formatted_address");
+		} catch (JSONException e1) {
+
+		} catch (Exception e) {
+
+		}
+
+		float currentBatterylevel = getBatteryLevel();
+		float currentDeviceSpeed = loc.getSpeed();
+
+		/*
+		 * CALL WEBSERVICE mywebservice(currentLocation, currentDeviceSpeed,
+		 * currentBatterylevel);
+		 */
 	}
-	
+
+	public float getBatteryLevel() {
+		Intent batteryIntent = registerReceiver(null, new IntentFilter(
+				Intent.ACTION_BATTERY_CHANGED));
+		int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+		int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+		if (level == -1 || scale == -1) {
+			return 50.0f;
+		}
+
+		return ((float) level / (float) scale) * 100.0f;
+	}
+
+	private Location getLastKnownLocation() {
+		LocationManager mLocationManager = (LocationManager) getApplicationContext()
+				.getSystemService(LOCATION_SERVICE);
+		List<String> providers = mLocationManager.getProviders(true);
+		Location bestLocation = null;
+		for (String provider : providers) {
+			Location l = mLocationManager.getLastKnownLocation(provider);
+			if (l == null) {
+				continue;
+			}
+			if (bestLocation == null
+					|| l.getAccuracy() < bestLocation.getAccuracy()) {
+				bestLocation = l;
+			}
+		}
+		return bestLocation;
+	}
+
 	public JSONObject getLocationInfo(double lat, double lng) {
 
-        HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?latlng="+lat+","+lng+"&sensor=true");
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response;
-        StringBuilder stringBuilder = new StringBuilder();
+		HttpGet httpGet = new HttpGet(
+				"http://maps.google.com/maps/api/geocode/json?latlng=" + lat
+						+ "," + lng + "&sensor=true");
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse response;
+		StringBuilder stringBuilder = new StringBuilder();
 
-        try {
-            response = client.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            InputStream stream = entity.getContent();
-            int b;
-            while ((b = stream.read()) != -1) {
-                stringBuilder.append((char) b);
-            }
-        } catch (ClientProtocolException e) {
-        } catch (IOException e) {
-        }
+		try {
+			response = client.execute(httpGet);
+			HttpEntity entity = response.getEntity();
+			InputStream stream = entity.getContent();
+			int b;
+			while ((b = stream.read()) != -1) {
+				stringBuilder.append((char) b);
+			}
+		} catch (ClientProtocolException e) {
+		} catch (IOException e) {
+		}
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject = new JSONObject(stringBuilder.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject = new JSONObject(stringBuilder.toString());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
-        return jsonObject;
-    }
-	
+		return jsonObject;
+	}
 
 }
