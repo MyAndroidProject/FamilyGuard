@@ -15,10 +15,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.myandroidproject.childlocator.action.UpdateService;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -40,6 +43,8 @@ public class HeartBeatServiceChild extends Service {
 	private LocationManager mlocManager = null;
 	private LocationListener mlocListener;
 	private Timer timer;
+	private SharedPreferences preferences;
+	private UpdateService service;
 
 	private final class ServiceHandler extends Handler {
 
@@ -161,8 +166,18 @@ public class HeartBeatServiceChild extends Service {
 
 		float currentBatterylevel = getBatteryLevel();
 		float currentDeviceSpeed = loc.getSpeed();
+		preferences = getApplicationContext().getSharedPreferences(
+				"localdiskchildlocator", 0);
+		String userName = preferences.getString("userName", "Unknown");
+		
+		service = new UpdateService();
+		service.setUserName(userName);
+		service.setLocation(currentLocation);
+		service.setSpeed(currentDeviceSpeed);
+		service.setBatteryStatus(currentBatterylevel);
+		service.doUpdateService();
 
-		/*
+		/*..
 		 * CALL WEBSERVICE mywebservice(currentLocation, currentDeviceSpeed,
 		 * currentBatterylevel);
 		 */
