@@ -8,7 +8,15 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="21" />
 
+       <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
 
     <application
         android:allowBackup="true"
@@ -32,6 +40,14 @@
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
+        <service
+            android:name="com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceChild"
+            android:enabled="true" >
+        </service>
+        <service
+            android:name="com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceParent"
+            android:enabled="true" >
+             </service>
     </application>
 
 </manifest>
