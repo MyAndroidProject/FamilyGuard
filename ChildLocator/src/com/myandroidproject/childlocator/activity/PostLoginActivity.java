@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.myandroidproject.childlocator.action.DependentAction;
+import com.myandroidproject.childlocator.action.UpdateService;
 import com.myandroidproject.childlocator.activity.R.id;
 import com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceChild;
 import com.myandroidproject.childlocator.servicecomponent.HeartBeatServiceParent;
@@ -30,6 +31,7 @@ public class PostLoginActivity extends Activity {
 	private SharedPreferences pref;
 	private Editor editor;
 	private int approle;
+	private UpdateService service;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -160,8 +162,15 @@ public class PostLoginActivity extends Activity {
 				alert.show();
 
 			} else {
-				Toast.makeText(getApplicationContext(),
-						"This is only for parent", Toast.LENGTH_LONG).show();
+				/*Toast.makeText(getApplicationContext(),
+						"This is only for parent", Toast.LENGTH_LONG).show();*/
+				service = new UpdateService();
+				service.setUserName("tutu");
+				service.setLocation("paravoor");
+				service.setSpeed(22);
+				service.setBatteryStatus(33);
+				service.doUpdateService();
+
 			}
 			return true;
 
