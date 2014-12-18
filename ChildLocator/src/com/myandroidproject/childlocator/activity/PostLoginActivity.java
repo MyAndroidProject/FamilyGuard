@@ -164,12 +164,7 @@ public class PostLoginActivity extends Activity {
 			} else {
 				/*Toast.makeText(getApplicationContext(),
 						"This is only for parent", Toast.LENGTH_LONG).show();*/
-				service = new UpdateService();
-				service.setUserName("tutu");
-				service.setLocation("paravoor");
-				service.setSpeed(22);
-				service.setBatteryStatus(33);
-				service.doUpdateService();
+				
 
 			}
 			return true;
