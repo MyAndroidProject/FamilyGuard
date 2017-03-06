@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.myandroidproject.childlocator.activity.PostLoginActivity" >
+
+   
+    
+        <item
+        android:id="@+id/item1"
+        android:orderInCategory="101"
+        android:title="@string/add"/>
+         <item
+        android:id="@+id/item2"
+        android:orderInCategory="102"
+         android:title="@string/remove"/>
+
+</menu>
